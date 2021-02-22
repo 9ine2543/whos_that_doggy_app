@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whos_that_doggy_app/page/result.dart';
+import 'package:image_picker/image_picker.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -7,6 +8,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String path = '';
+
+  Future takeImg() async {
+    final pickerImg = await ImagePicker().getImage(source: ImageSource.camera);
+    path = '';
+    if (pickerImg != null) path = pickerImg.path;
+  }
+
+  Future selectImg() async {
+    final pickerImg = await ImagePicker().getImage(source: ImageSource.gallery);
+    path = '';
+    if (pickerImg != null) path = pickerImg.path;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,8 +75,18 @@ class _HomePageState extends State<HomePage> {
                           decoration: BoxDecoration(shape: BoxShape.circle),
                           child: FloatingActionButton(
                             heroTag: 'take photo',
-                            onPressed: () {
-                              print('take photo');
+                            onPressed: () async {
+                              await takeImg();
+                              // print('take photo');
+                              if (path.length > 0)
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ResultPage(
+                                      filename: path,
+                                    ),
+                                  ),
+                                );
                             },
                             backgroundColor: Color(0xff6c63ff),
                             child: Icon(
@@ -87,14 +112,19 @@ class _HomePageState extends State<HomePage> {
                           decoration: BoxDecoration(shape: BoxShape.circle),
                           child: FloatingActionButton(
                             heroTag: 'upload',
-                            onPressed: () {
-                              print('upload');
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ResultPage(),
-                                ),
-                              );
+                            onPressed: () async {
+                              await selectImg();
+
+                              // () {};
+                              if (path.length > 0)
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ResultPage(
+                                      filename: path,
+                                    ),
+                                  ),
+                                );
                             },
                             backgroundColor: Color(0xff6c63ff),
                             child: Icon(
